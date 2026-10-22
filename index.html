@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>English Fun – כיתה ה'</title>
+<style>
+  :root {
+    --bg: #fff8e7;
+    --ink: #2b2d42;
+    --card: #ffffff;
+    --shadow: 0 6px 0 rgba(0,0,0,.12);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", "Arial Hebrew", Arial, sans-serif;
+    background: var(--bg);
+    background-image: radial-gradient(#ffe3a3 2px, transparent 2px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 16px; }
+
+  header {
+    text-align: center;
+    background: linear-gradient(135deg, #bde0fe, #e0c3fc);
+    color: var(--ink);
+    border-radius: 28px;
+    padding: 24px 16px 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+  }
+  header .mascot { font-size: 64px; display: inline-block; animation: bounce 2s infinite; }
+  header h1 { margin: 4px 0; font-size: clamp(28px, 6vw, 44px); letter-spacing: 1px; }
+  header p { margin: 0; font-size: 18px; opacity: .95; }
+
+  .progress {
+    background: #fff;
+    border-radius: 20px;
+    padding: 12px 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 22px;
+  }
+  .progress-top { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 8px; }
+  .bar { height: 22px; background: #e9ecef; border-radius: 12px; overflow: hidden; }
+  .bar > div {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #ffe0a3, #ffb4a2);
+    border-radius: 12px;
+    transition: width .5s;
+  }
+  #msg { margin-top: 8px; text-align: center; font-size: 18px; min-height: 28px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 18px; }
+
+  .topic {
+    background: var(--card);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 4px solid var(--c);
+  }
+  .topic h2 {
+    margin: 0;
+    padding: 12px 16px;
+    background: var(--c);
+    color: var(--ink);
+    font-size: 24px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .topic h2 .emoji { font-size: 38px; }
+  .topic h2 small { display: block; font-size: 15px; font-weight: 400; opacity: .95; }
+
+  .practice-wrap { padding: 14px 12px; }
+  .practice .best:empty { display: none; }
+  .practice {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--c); color: var(--ink);
+    border: 3px solid var(--ink); border-radius: 18px;
+    padding: 10px 12px; font-size: 20px; font-weight: 800; font-family: inherit;
+    cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,.18);
+  }
+  .practice:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,.18); }
+  .practice:focus-visible { outline: 3px solid #ffd166; outline-offset: 2px; }
+  .practice .best { font-size: 14px; font-weight: 600; background: #fff; border-radius: 12px; padding: 1px 10px; }
+
+  dialog#quiz {
+    border: 5px solid var(--qc, #a5c8ff); border-radius: 28px;
+    padding: 0; width: min(560px, 94vw); max-height: 92vh; overflow: auto;
+    background: #fff; color: var(--ink);
+  }
+  dialog#quiz::backdrop { background: rgba(43,45,66,.45); }
+  .q-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--qc, #a5c8ff); font-weight: 800; }
+  .q-head .t { flex: 1; font-size: 20px; }
+  .q-head button { background: #fff; border: 2px solid var(--ink); border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; font-family: inherit; }
+  .q-bar { height: 10px; background: #eceff3; }
+  .q-bar div { height: 100%; width: 0; background: #ffb4a2; transition: width .3s; }
+  .q-body { padding: 18px 16px 20px; text-align: center; }
+  .q-big { font-size: 72px; line-height: 1.1; min-height: 10px; }
+  .q-prompt { font-size: 24px; font-weight: 700; margin: 8px 0 16px; overflow-wrap: anywhere; }
+  .q-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .q-opts button, .q-type button, .q-next {
+    font-family: inherit; font-size: 20px; font-weight: 700; color: var(--ink);
+    background: #f3f4f8; border: 3px solid #d5d9e4; border-radius: 16px;
+    padding: 12px 8px; cursor: pointer; overflow-wrap: anywhere;
+  }
+  .q-opts button:hover:not(:disabled) { background: #e8ecf7; border-color: var(--qc, #a5c8ff); }
+  .q-opts button:focus-visible, .q-type button:focus-visible, .q-next:focus-visible, .q-type input:focus-visible { outline: 3px solid #ffd166; outline-offset: 2px; }
+  .q-opts button.ok, .q-type input.ok { background: #c9f2d9; border-color: #5fc98b; }
+  .q-opts button.bad, .q-type input.bad { background: #ffd0d0; border-color: #f08a8a; }
+  .q-type { display: flex; gap: 8px; }
+  .q-type input {
+    flex: 1; min-width: 0; font-family: inherit; font-size: 22px; padding: 10px 12px;
+    border: 3px solid #d5d9e4; border-radius: 16px; text-align: center;
+  }
+  .q-fb { min-height: 34px; margin-top: 14px; font-size: 20px; font-weight: 700; }
+  .q-fb .say { font-size: 18px; margin-inline-start: 8px; background: #fff; border: 2px solid var(--ink); border-radius: 12px; padding: 0 8px; cursor: pointer; font-family: inherit; }
+  .q-next { margin-top: 10px; background: var(--qc, #a5c8ff); border-color: var(--ink); min-width: 140px; }
+  .q-end .stars { font-size: 56px; margin: 8px 0; }
+  .q-end .score { font-size: 28px; font-weight: 800; }
+  .q-end .row { display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+
+  footer { text-align: center; margin: 26px 0 10px; font-size: 15px; color: #6c757d; }
+  .reset {
+    background: none; border: 2px dashed #adb5bd; color: #6c757d;
+    border-radius: 14px; padding: 6px 14px; cursor: pointer; font-size: 14px;
+  }
+
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @media (prefers-reduced-motion: reduce) { header .mascot { animation: none; } .bar > div { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="mascot">🦉</div>
+    <h1 dir="ltr">English Fun!</h1>
+    <p>בואו נתרגל אנגלית – תרגילים לכיתה ה'</p>
+  </header>
+
+  <section class="progress" aria-live="polite">
+    <div class="progress-top"><span>⭐ נושאים שתרגלתי</span><span id="count" dir="ltr">0 / 0</span></div>
+    <div class="bar"><div id="fill"></div></div>
+    <div id="msg">בחרו נושא ולחצו על 🎯 תרגול!</div>
+  </section>
+
+  <main class="grid" id="grid"></main>
+
+  <dialog id="quiz" aria-labelledby="q-title">
+    <div class="q-head">
+      <span class="t" id="q-title"></span>
+      <button type="button" id="q-close" aria-label="סגירה">✕</button>
+    </div>
+    <div class="q-bar"><div id="q-prog"></div></div>
+    <div class="q-body" id="q-body"></div>
+  </dialog>
+
+  <footer>
+    <p>התרגולים עובדים גם בלי אינטרנט 🎉</p>
+    <button class="reset" id="reset" type="button">התחל מחדש</button>
+  </footer>
+</div>
+
+<script>
+  var TOPICS = [
+    { emoji: "👨‍👩‍👧", he: "משפחה", en: "Family", color: "#ffb4a2" },
+    { emoji: "🏫", he: "בית ספר", en: "School", color: "#a5c8ff" },
+    { emoji: "🐮", he: "חיות", en: "Animals", color: "#a8e6cf" },
+    { emoji: "🎨", he: "צבעים", en: "Colors", color: "#e0bbf5" },
+    { emoji: "🖐️", he: "איברי גוף", en: "Body parts", color: "#ffd6a5" },
+    { emoji: "👕", he: "ביגוד", en: "Clothes", color: "#fde68a" },
+    { emoji: "🏃", he: "פעלים", en: "Action verbs", color: "#ffadad" },
+    { emoji: "🌈", he: "שמות תואר", en: "Adjectives", color: "#c7ceea" },
+    { emoji: "✏️", he: "כתיבת משפטים", en: "There is / There are", color: "#9bf6ff" },
+    { emoji: "🙋", he: "על עצמי", en: "About myself", color: "#ffc6e0" }
+  ];
+
+  // ---------- Practice questions (same order as TOPICS) ----------
+  // M = multiple choice: M(prompt, right answer, [wrong answers], big emoji)
+  // T = typing: T(prompt, right answer or [accepted answers], big emoji)
+  function M(p, a, wrong, big) { return { t: "mc", p: p, a: a, o: [a].concat(wrong), big: big || "" }; }
+  function T(p, a, big) { return { t: "type", p: p, a: [].concat(a), big: big || "" }; }
+  var W = "What is this?";
+
+  var QUIZ = [
+    // Family
+    [ M("איך אומרים \"אמא\" באנגלית?", "mother", ["father", "sister", "brother"], "👩"),
+      M("איך אומרים \"אבא\" באנגלית?", "father", ["mother", "brother", "uncle"], "👨"),
+      M("איך אומרים \"סבתא\" באנגלית?", "grandmother", ["grandfather", "aunt", "mother"], "👵"),
+      M("איך אומרים \"אח\" באנגלית?", "brother", ["sister", "cousin", "father"], "👦"),
+      M("My mother's sister is my ___.", "aunt", ["uncle", "cousin", "brother"]),
+      M("My father's father is my ___.", "grandfather", ["grandmother", "uncle", "brother"]),
+      T("איך כותבים \"אחות\" באנגלית?", "sister", "👧"),
+      M("I love my ___.", "family", ["school", "pencil", "table"], "👨‍👩‍👧‍👦") ],
+    // School
+    [ M(W, "pencil", ["pen", "ruler", "book"], "✏️"),
+      M(W, "book", ["bag", "desk", "chair"], "📖"),
+      M(W, "scissors", ["glue", "ruler", "eraser"], "✂️"),
+      M(W, "ruler", ["pencil", "scissors", "notebook"], "📏"),
+      M("איך אומרים \"מחברת\" באנגלית?", "notebook", ["notice", "number", "window"], "📓"),
+      M("איך אומרים \"מורה\" באנגלית?", "teacher", ["student", "doctor", "friend"], "🧑‍🏫"),
+      M("I sit on a ___.", "chair", ["board", "window", "door"], "🪑"),
+      T("איך כותבים \"תיק\" באנגלית?", ["bag", "backpack"], "🎒") ],
+    // Animals
+    [ M(W, "cow", ["horse", "sheep", "goat"], "🐮"),
+      M(W, "sheep", ["goat", "pig", "dog"], "🐑"),
+      M(W, "pig", ["cow", "cat", "duck"], "🐷"),
+      M(W, "horse", ["cow", "dog", "sheep"], "🐴"),
+      M(W, "chicken", ["duck", "cat", "bird"], "🐔"),
+      M("A ___ says \"meow\".", "cat", ["dog", "cow", "duck"], "🐱"),
+      M("A ___ says \"quack\".", "duck", ["pig", "horse", "cat"], "🦆"),
+      T(W, "dog", "🐶") ],
+    // Colors
+    [ M("What color is it?", "red", ["blue", "pink", "orange"], "🔴"),
+      M("What color is it?", "blue", ["green", "black", "yellow"], "🔵"),
+      M("What color is it?", "green", ["red", "brown", "purple"], "🟢"),
+      M("What color is it?", "yellow", ["orange", "white", "blue"], "🟡"),
+      M("A banana is ___.", "yellow", ["blue", "black", "purple"], "🍌"),
+      M("On a sunny day the sky is ___.", "blue", ["green", "brown", "red"], "☀️"),
+      M("איך אומרים \"סגול\" באנגלית?", "purple", ["pink", "brown", "orange"]),
+      T("An ___ is a fruit and a color.", "orange", "🍊") ],
+    // Body parts
+    [ M(W, "eye", ["ear", "nose", "mouth"], "👁️"),
+      M(W, "ear", ["eye", "hand", "mouth"], "👂"),
+      M(W, "nose", ["ear", "mouth", "foot"], "👃"),
+      M(W, "mouth", ["nose", "eye", "hand"], "👄"),
+      M("I see with my ___.", "eyes", ["ears", "hands", "feet"]),
+      M("I walk with my ___.", "feet", ["hands", "eyes", "ears"], "🦶"),
+      M("איך אומרים \"יד\" באנגלית?", "hand", ["head", "hair", "leg"], "✋"),
+      T(W, "tooth", "🦷") ],
+    // Clothes
+    [ M(W, "T-shirt", ["dress", "socks", "hat"], "👕"),
+      M(W, "pants", ["shirt", "dress", "coat"], "👖"),
+      M(W, "dress", ["skirt", "pants", "scarf"], "👗"),
+      M(W, "socks", ["shoes", "gloves", "hats"], "🧦"),
+      M(W, "shoes", ["gloves", "scarf", "socks"], "👟"),
+      M("It is cold. I wear a ___.", "coat", ["T-shirt", "swimsuit", "sandal"], "🥶"),
+      M("It is hot. I wear ___.", "shorts", ["gloves", "a coat", "a scarf"], "🥵"),
+      T(W, ["cap", "hat"], "🧢") ],
+    // Action verbs
+    [ M(W, "run", ["walk", "jump", "swim"], "🏃"),
+      M(W, "swim", ["run", "fly", "dance"], "🏊"),
+      M(W, "sleep", ["eat", "sing", "read"], "😴"),
+      M("I ___ a book.", "read", ["eat", "jump", "sing"], "📖"),
+      M(W, "dance", ["sing", "cook", "sleep"], "💃"),
+      M("Fish can ___.", "swim", ["fly", "read", "climb"], "🐟"),
+      M("Birds can ___ in the sky.", "fly", ["drive", "cook", "swim"], "🐦"),
+      T("I ___ pizza.", "eat", "🍕") ],
+    // Adjectives
+    [ M("An elephant is ___.", "big", ["small", "short", "cold"], "🐘"),
+      M("A mouse is ___.", "small", ["big", "tall", "hot"], "🐭"),
+      M("Ice is ___.", "cold", ["hot", "new", "old"], "🧊"),
+      M("The sun is ___.", "hot", ["cold", "sad", "slow"], "☀️"),
+      M("The opposite of \"fast\" is ___.", "slow", ["tall", "old", "happy"], "⚡"),
+      M("The opposite of \"happy\" is ___.", "sad", ["big", "new", "hot"], "😊"),
+      M("The opposite of \"tall\" is ___.", "short", ["small", "slow", "cold"], "🦒"),
+      T("The opposite of \"old\" is ___.", "new", "🆕") ],
+    // There is / There are
+    [ M("There ___ a cat on the sofa.", "is", ["are"], "🐱"),
+      M("There ___ three dogs in the garden.", "are", ["is"], "🐕"),
+      M("There ___ a book on the desk.", "is", ["are"], "📘"),
+      M("There ___ three apples.", "are", ["is"], "🍎🍎🍎"),
+      M("There ___ an apple in the box.", "is", ["are"], "📦"),
+      M("There ___ many students in the class.", "are", ["is"], "🧒🧒🧒"),
+      M("There ___ any milk in the fridge.", "isn't", ["aren't"], "🥛"),
+      T("There ___ five birds in the tree. (is / are)", "are", "🌳") ],
+    // About myself
+    [ M("What's your name?", "My name is Dan.", ["I am ten.", "I am fine.", "I like pizza."], "🙋"),
+      M("How old are you?", "I am ten years old.", ["My name is Dan.", "I am from Israel.", "I am fine."], "🎂"),
+      M("Where are you from?", "I am from Israel.", ["I am ten.", "I am fine.", "My name is Noa."], "🌍"),
+      M("How are you?", "I am fine, thank you.", ["My name is Dan.", "I am ten.", "I am from Israel."], "😊"),
+      M("My name ___ Noa.", "is", ["am", "are", "be"]),
+      M("I ___ ten years old.", "am", ["is", "are", "have"]),
+      M("I ___ a brother and a sister.", "have", ["has", "am", "is"], "👫"),
+      T("I ___ in fifth grade. (am / is / are)", "am", "🏫") ]
+  ];
+
+  var BKEY = "english-fun-grade5-best";
+  var best = {};
+  try { best = JSON.parse(localStorage.getItem(BKEY) || "{}"); } catch (e) { best = {}; }
+  function saveBest() { try { localStorage.setItem(BKEY, JSON.stringify(best)); } catch (e) {} }
+
+  var grid = document.getElementById("grid");
+  var total = 0;
+  var practiceBtns = [];
+
+  TOPICS.forEach(function (t, ti) {
+    var sec = document.createElement("section");
+    sec.className = "topic";
+    sec.style.setProperty("--c", t.color);
+
+    var h = document.createElement("h2");
+    h.innerHTML = '<span class="emoji"></span><span><span class="he"></span><small dir="ltr"></small></span>';
+    h.querySelector(".emoji").textContent = t.emoji;
+    h.querySelector(".he").textContent = t.he;
+    h.querySelector("small").textContent = t.en;
+    sec.appendChild(h);
+
+    var pw = document.createElement("div");
+    pw.className = "practice-wrap";
+    var pb = document.createElement("button");
+    pb.type = "button";
+    pb.className = "practice";
+    pb.innerHTML = '🎯 <span>תרגול</span> <span class="best"></span>';
+    pb.addEventListener("click", function () { openQuiz(ti); });
+    pw.appendChild(pb);
+    sec.appendChild(pw);
+    practiceBtns[ti] = pb;
+    grid.appendChild(sec);
+  });
+
+  var MSGS = [
+    "בחרו נושא ולחצו על 🎯 תרגול!",
+    "יפה מאוד! ממשיכים 💪",
+    "איזה כיף, כבר באמצע הדרך! 🌟",
+    "כמעט שם, אלוף/ה! 🔥",
+    "וואו! תרגלתם את כל הנושאים! 🏆 You are a star!"
+  ];
+
+  function update() {
+    var total = TOPICS.length;
+    var n = Object.keys(best).length;
+    var pct = Math.round(n / total * 100);
+    document.getElementById("count").textContent = n + " / " + total;
+    document.getElementById("fill").style.width = pct + "%";
+    var i = n === 0 ? 0 : n >= total ? 4 : Math.min(3, 1 + Math.floor(pct / 34));
+    document.getElementById("msg").textContent = MSGS[i];
+  }
+
+  document.getElementById("reset").addEventListener("click", function () {
+    if (!confirm("למחוק את כל הציונים ולהתחיל מחדש?")) return;
+    best = {}; saveBest();
+    showBest();
+    update();
+  });
+
+  // ---------- Practice engine ----------
+  var quiz = document.getElementById("quiz");
+  var qBody = document.getElementById("q-body");
+  var qProg = document.getElementById("q-prog");
+  var cur = { ti: 0, qs: [], i: 0, score: 0 };
+
+  function shuffle(a) {
+    a = a.slice();
+    for (var k = a.length - 1; k > 0; k--) {
+      var j = Math.floor(Math.random() * (k + 1)), t = a[k]; a[k] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function speak(text) {
+    try {
+      if (!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US"; u.rate = 0.85;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  function showBest() {
+    practiceBtns.forEach(function (b, ti) {
+      var s = best[ti];
+      b.querySelector(".best").textContent = s == null ? "" : "⭐ " + s + "/" + QUIZ[ti].length;
+    });
+  }
+
+  function openQuiz(ti) {
+    var t = TOPICS[ti];
+    cur = { ti: ti, qs: shuffle(QUIZ[ti]), i: 0, score: 0 };
+    quiz.style.setProperty("--qc", t.color);
+    document.getElementById("q-title").textContent = t.emoji + " " + t.he + " – " + t.en;
+    if (!quiz.open) quiz.showModal();
+    showQ();
+  }
+
+  function showQ() {
+    var q = cur.qs[cur.i], n = cur.qs.length;
+    qProg.style.width = (cur.i / n * 100) + "%";
+    qBody.textContent = "";
+    qBody.className = "q-body";
+
+    var step = el("div", "", "שאלה " + (cur.i + 1) + " מתוך " + n);
+    step.style.cssText = "font-size:14px;color:#6c757d;font-weight:700";
+    qBody.appendChild(step);
+    if (q.big) qBody.appendChild(el("div", "q-big", q.big));
+    var pr = el("div", "q-prompt", q.p);
+    pr.dir = "auto";
+    qBody.appendChild(pr);
+
+    var fb = el("div", "q-fb");
+    fb.setAttribute("aria-live", "polite");
+    var nextBtn = el("button", "q-next", cur.i === n - 1 ? "סיום 🏁" : "הבאה ←");
+    nextBtn.type = "button";
+    nextBtn.hidden = true;
+    nextBtn.addEventListener("click", function () {
+      cur.i++;
+      if (cur.i < n) showQ(); else showEnd();
+    });
+
+    function finish(ok) {
+      if (ok) cur.score++;
+      var ans = q.t === "mc" ? q.a : q.a[0];
+      var full = q.p.indexOf("___") >= 0 ? q.p.replace("___", ans) : ans;
+      fb.textContent = ok ? "🎉 כל הכבוד!" : "לא נורא! התשובה: " + ans;
+      var say = el("button", "say", "🔊");
+      say.type = "button";
+      say.setAttribute("aria-label", "השמע");
+      say.addEventListener("click", function () { speak(full.replace(/\([^)]*\)/g, "")); });
+      fb.appendChild(say);
+      nextBtn.hidden = false;
+      nextBtn.focus();
+    }
+
+    if (q.t === "mc") {
+      var opts = el("div", "q-opts");
+      shuffle(q.o).forEach(function (o) {
+        var b = el("button", "", o);
+        b.type = "button";
+        b.dir = "ltr";
+        b.addEventListener("click", function () {
+          var ok = o === q.a;
+          Array.prototype.forEach.call(opts.children, function (x) {
+            x.disabled = true;
+            if (x.textContent === q.a) x.classList.add("ok");
+          });
+          if (!ok) b.classList.add("bad");
+          finish(ok);
+        });
+        opts.appendChild(b);
+      });
+      qBody.appendChild(opts);
+    } else {
+      var row = el("div", "q-type");
+      var inp = document.createElement("input");
+      inp.type = "text"; inp.dir = "ltr";
+      inp.autocomplete = "off"; inp.autocapitalize = "off"; inp.spellcheck = false;
+      inp.placeholder = q.a[0].charAt(0) + " ...";
+      inp.setAttribute("aria-label", "כתבו את התשובה באנגלית");
+      var chk = el("button", "", "בדיקה");
+      chk.type = "button";
+      function check() {
+        var v = inp.value.trim().toLowerCase().replace(/\s+/g, " ").replace(/[.!?]+$/, "");
+        if (!v) { inp.focus(); return; }
+        if (/[֐-׿]/.test(v)) { fb.textContent = "המקלדת בעברית – מחליפים לאנגלית (Alt+Shift) 🙂"; inp.focus(); return; }
+        var ok = q.a.some(function (a) { return a.toLowerCase() === v; });
+        inp.disabled = true; chk.disabled = true;
+        inp.classList.add(ok ? "ok" : "bad");
+        finish(ok);
+      }
+      chk.addEventListener("click", check);
+      inp.addEventListener("keydown", function (e) { if (e.key === "Enter") check(); });
+      row.appendChild(inp); row.appendChild(chk);
+      qBody.appendChild(row);
+      setTimeout(function () { inp.focus(); }, 50);
+    }
+    qBody.appendChild(fb);
+    qBody.appendChild(nextBtn);
+  }
+
+  function showEnd() {
+    var n = cur.qs.length, s = cur.score;
+    qProg.style.width = "100%";
+    if (best[cur.ti] == null || s > best[cur.ti]) { best[cur.ti] = s; saveBest(); showBest(); }
+    qBody.textContent = "";
+    qBody.className = "q-body q-end";
+    var stars = s >= n - 1 ? "⭐⭐⭐" : s >= Math.ceil(n * 0.6) ? "⭐⭐" : "⭐";
+    var msg = s === n ? "מושלם! 🏆 Perfect!" : s >= n - 1 ? "כמעט מושלם! Great job! 🎉" : s >= Math.ceil(n * 0.6) ? "יפה מאוד! Good job! 💪" : "ממשיכים להתאמן, אתם בדרך הנכונה! 🌱";
+    qBody.appendChild(el("div", "stars", stars));
+    qBody.appendChild(el("div", "score", s + " / " + n));
+    qBody.appendChild(el("div", "q-prompt", msg));
+    var row = el("div", "row");
+    var again = el("button", "q-next", "🔁 עוד פעם");
+    again.type = "button";
+    again.addEventListener("click", function () { openQuiz(cur.ti); });
+    var close = el("button", "q-next", "סגירה");
+    close.type = "button";
+    close.style.background = "#f3f4f8";
+    close.addEventListener("click", function () { quiz.close(); });
+    row.appendChild(again); row.appendChild(close);
+    qBody.appendChild(row);
+    again.focus();
+  }
+
+  document.getElementById("q-close").addEventListener("click", function () { quiz.close(); });
+  quiz.addEventListener("close", function () { try { window.speechSynthesis.cancel(); } catch (e) {} });
+  quiz.addEventListener("click", function (e) { if (e.target === quiz) quiz.close(); });
+
+  showBest();
+  update();
+</script>
+</body>
+</html>
