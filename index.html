@@ -71,7 +71,9 @@
     display: flex; align-items: center; gap: 10px;
   }
   .topic h2 .emoji { font-size: 38px; }
-  .topic h2 small { display: block; font-size: 15px; font-weight: 400; opacity: .95; }
+  .topic h2 .names { display: flex; flex-direction: column-reverse; line-height: 1.15; }
+  .topic h2 .en { font-size: 32px; font-weight: 800; }
+  .topic h2 .he { font-size: 16px; font-weight: 600; }
 
   .practice-wrap { padding: 14px 12px; }
   .practice .best:empty { display: none; }
@@ -94,23 +96,29 @@
   }
   dialog#quiz::backdrop { background: rgba(43,45,66,.45); }
   .q-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--qc, #a5c8ff); font-weight: 800; }
-  .q-head .t { flex: 1; font-size: 24px; }
+  .q-head .t { flex: 1; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .q-head .emo { font-size: 28px; }
+  .q-head .ten { font-size: 28px; font-weight: 800; }
+  .q-head .the { font-size: 16px; font-weight: 600; }
   .q-head button { background: #fff; border: 2px solid var(--ink); border-radius: 50%; width: 36px; height: 36px; font-size: 18px; cursor: pointer; font-family: inherit; }
   .q-bar { height: 10px; background: #eceff3; }
   .q-bar div { height: 100%; width: 0; background: #ffb4a2; transition: width .3s; }
   .q-body { padding: 18px 16px 20px; text-align: center; }
-  .q-step { font-size: 16px; color: #6c757d; font-weight: 700; }
+  .q-step { font-size: 14px; color: #6c757d; font-weight: 700; }
   .q-big { font-size: 80px; line-height: 1.1; margin: 18px 0 26px; }
-  .q-prompt { font-size: 30px; font-weight: 700; line-height: 1.35; margin: 0 0 22px; overflow-wrap: anywhere; }
+  .q-prompt { font-weight: 700; line-height: 1.35; margin: 0 0 22px; overflow-wrap: anywhere; }
+  .q-prompt.en { font-size: 36px; }
+  .q-prompt.he { font-size: 22px; font-weight: 600; }
   .q-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .q-opts button, .q-type button, .q-next {
-    font-family: inherit; font-size: 26px; font-weight: 700; color: var(--ink);
+    font-family: inherit; font-size: 30px; font-weight: 700; color: var(--ink);
     background: #f3f4f8; border: 3px solid #d5d9e4; border-radius: 16px;
     padding: 14px 8px; cursor: pointer; overflow-wrap: break-word;
   }
   @media (max-width: 420px) {
     .q-opts { grid-template-columns: 1fr; }
-    .q-prompt { font-size: 26px; }
+    .q-prompt.en { font-size: 30px; }
+    .q-prompt.he { font-size: 19px; }
     .q-big { font-size: 68px; }
   }
   .q-opts button:hover:not(:disabled) { background: #e8ecf7; border-color: var(--qc, #a5c8ff); }
@@ -122,8 +130,13 @@
     flex: 1; min-width: 0; font-family: inherit; font-size: 28px; padding: 12px;
     border: 3px solid #d5d9e4; border-radius: 16px; text-align: center;
   }
-  .q-fb { min-height: 40px; margin-top: 18px; font-size: 24px; font-weight: 700; }
-  .q-fb .say { font-size: 24px; margin-inline-start: 8px; background: #fff; border: 2px solid var(--ink); border-radius: 12px; padding: 0 8px; cursor: pointer; font-family: inherit; }
+  .q-fb { min-height: 40px; margin-top: 18px; font-weight: 700; }
+  .q-fb .fb-he { font-size: 18px; font-weight: 600; }
+  .q-fb .fb-en { font-size: 32px; font-weight: 800; margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; overflow-wrap: anywhere; }
+  .q-fb .say-msg { font-size: 15px; font-weight: 600; color: #9a3412; margin-top: 8px; }
+  .q-fb .say { font-size: 30px; background: #fff; border: 3px solid var(--ink); border-radius: 50%; width: 56px; height: 56px; cursor: pointer; font-family: inherit; display: grid; place-items: center; }
+  .q-fb .say.on { background: #ffe0a3; }
+  .q-next, .q-type button { font-size: 20px; }
   .q-next { margin-top: 10px; background: var(--qc, #a5c8ff); border-color: var(--ink); min-width: 140px; }
   .q-end .stars { font-size: 56px; margin: 8px 0; }
   .q-end .score { font-size: 28px; font-weight: 800; }
@@ -300,10 +313,10 @@
     sec.style.setProperty("--c", t.color);
 
     var h = document.createElement("h2");
-    h.innerHTML = '<span class="emoji"></span><span><span class="he"></span><small dir="ltr"></small></span>';
+    h.innerHTML = '<span class="emoji"></span><span class="names"><span class="he"></span><span class="en" dir="ltr"></span></span>';
     h.querySelector(".emoji").textContent = t.emoji;
     h.querySelector(".he").textContent = t.he;
-    h.querySelector("small").textContent = t.en;
+    h.querySelector(".en").textContent = t.en;
     sec.appendChild(h);
 
     var pw = document.createElement("div");
@@ -363,16 +376,36 @@
     if (text != null) e.textContent = text;
     return e;
   }
-  function speak(text) {
-    try {
-      if (!("speechSynthesis" in window)) return;
-      window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text);
-      u.lang = "en-US"; u.rate = 0.85;
-      var v = window.speechSynthesis.getVoices().filter(function (x) { return x.lang === "en-US"; })[0];
-      if (v) u.voice = v;
-      window.speechSynthesis.speak(u);
-    } catch (e) {}
+  // Read-aloud. Browsers load voices late, drop a speak() right after cancel(),
+  // and may garbage-collect an utterance mid-speech, so: cache voices, wait a
+  // moment after cancel(), keep a reference, and report when nothing starts.
+  var voices = [], lastUtterance = null;
+  function loadVoices() { try { voices = window.speechSynthesis.getVoices(); } catch (e) {} }
+  if ("speechSynthesis" in window) {
+    loadVoices();
+    window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+  }
+  function speak(text, onState) {
+    if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") { onState("unsupported"); return; }
+    var s = window.speechSynthesis, started = false;
+    var busy = s.speaking || s.pending;
+    if (busy) s.cancel();
+    setTimeout(function () {
+      try {
+        var u = new SpeechSynthesisUtterance(text);
+        lastUtterance = u;
+        u.lang = "en-US"; u.rate = 0.85;
+        var v = voices.filter(function (x) { return x.lang.replace("_", "-") === "en-US"; })[0] ||
+                voices.filter(function (x) { return x.lang.slice(0, 2) === "en"; })[0];
+        if (v) u.voice = v;
+        u.onstart = function () { started = true; onState("playing"); };
+        u.onend = function () { onState("done"); };
+        u.onerror = function () { if (!started) onState("failed"); };
+        s.speak(u);
+        if (s.paused) s.resume();
+        setTimeout(function () { if (!started) onState("failed"); }, 2500);
+      } catch (e) { onState("failed"); }
+    }, busy ? 120 : 0);
   }
   function showBest() {
     practiceBtns.forEach(function (b, ti) {
@@ -385,7 +418,11 @@
     var t = TOPICS[ti];
     cur = { ti: ti, qs: shuffle(QUIZ[ti]), i: 0, score: 0 };
     quiz.style.setProperty("--qc", t.color);
-    document.getElementById("q-title").textContent = t.emoji + " " + t.he + " – " + t.en;
+    var qt = document.getElementById("q-title");
+    qt.textContent = "";
+    qt.appendChild(el("span", "emo", t.emoji));
+    qt.appendChild(el("span", "ten", t.en));
+    qt.appendChild(el("span", "the", t.he));
     if (!quiz.open) quiz.showModal();
     showQ();
   }
@@ -398,7 +435,8 @@
 
     qBody.appendChild(el("div", "q-step", "שאלה " + (cur.i + 1) + " מתוך " + n));
     if (q.big) qBody.appendChild(el("div", "q-big", q.big));
-    var pr = el("div", "q-prompt", q.p);
+    var isHe = /[֐-׿]/.test(q.p);
+    var pr = el("div", "q-prompt " + (isHe ? "he" : "en"), q.p);
     pr.dir = "auto";
     qBody.appendChild(pr);
 
@@ -416,12 +454,27 @@
       if (ok) cur.score++;
       var ans = q.t === "mc" ? q.a : q.a[0];
       var full = q.p.indexOf("___") >= 0 ? q.p.replace("___", ans) : ans;
-      fb.textContent = ok ? "🎉 כל הכבוד!" : "לא נורא! התשובה: " + ans;
+      fb.textContent = "";
+      fb.appendChild(el("div", "fb-he", ok ? "🎉 כל הכבוד!" : "לא נורא! התשובה הנכונה:"));
+      var line = el("div", "fb-en");
+      var fullEl = el("span", "", full);
+      fullEl.dir = "ltr";
+      line.appendChild(fullEl);
       var say = el("button", "say", "🔊");
       say.type = "button";
       say.setAttribute("aria-label", "השמע");
-      say.addEventListener("click", function () { speak(full.replace(/\([^)]*\)/g, "")); });
-      fb.appendChild(say);
+      var sayMsg = el("div", "say-msg");
+      say.addEventListener("click", function () {
+        sayMsg.textContent = "";
+        speak(full.replace(/\([^)]*\)/g, ""), function (st) {
+          say.classList.toggle("on", st === "playing");
+          if (st === "unsupported") sayMsg.textContent = "ההקראה לא נתמכת בדפדפן הזה. כדאי לפתוח את הקישור ב-Chrome.";
+          if (st === "failed") sayMsg.textContent = "לא נשמע קול? בדקו שעוצמת המדיה פתוחה ושהצליל לא על שקט, או פתחו ב-Chrome.";
+        });
+      });
+      line.appendChild(say);
+      fb.appendChild(line);
+      fb.appendChild(sayMsg);
       nextBtn.hidden = false;
       nextBtn.focus();
     }
